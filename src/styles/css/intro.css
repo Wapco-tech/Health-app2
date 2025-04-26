@@ -1,0 +1,177 @@
+body {  
+    display: block; /* Override the flexbox centering */  
+    justify-content: unset; /* Remove centering */  
+    align-items: unset; /* Remove centering */  
+    height: auto; /* Allow the page to grow vertically */  
+    opacity: 0; /* Start fully transparent for fade-in effect */  
+    transition: opacity 1s ease-in; /* Transition for the fade effect */  
+}  
+
+.fade-in {  
+    opacity: 1; /* Fully opaque when the class 'fade-in' is added */  
+}  
+
+.page {  
+    width: 100%; /* Use the full width of the screen */  
+    height: 100vh; /* Use the full height of the screen */  
+    display: flex;  
+    flex-direction: column;  
+    justify-content: center;  
+    align-items: center;  
+}  
+
+.carousel-item {  
+    height: 100vh; /* Make the carousel take up the full height of the screen */  
+    background-size: cover; /* Ensure the image covers the entire area */  
+    background-position: center; /* Center the image */   
+    opacity: 0.9;   
+}  
+
+.container {  
+    max-width: 100%; /* Allow the container to use the full width */  
+    padding: 0; /* Remove padding */  
+}  
+
+.card {  
+    border: none; /* Remove the card border */  
+    border-radius: 0; /* Remove the card border radius */  
+    box-shadow: none; /* Remove the card shadow */  
+}  
+
+.carousel-caption {  
+    position: absolute; /* Positioning the caption absolutely within the carousel */  
+    top: 50%; /* Center vertically */  
+    left: 50%; /* Center horizontally */  
+    transform: translate(-50%, -50%); /* Adjust positioning to truly center */  
+    background: rgba(0, 0, 0, 0.9); /* Semi-transparent background for captions */  
+    color: white;  
+    padding: 20px;  
+    border-radius: 10px;  
+    text-align: center; /* Center text within the caption */  
+    max-width: 1900px; /* Limit maximum width */   
+    width: 90%; /* Make the caption responsive */  
+    max-height: 1200px;  
+    height: 90%;   
+}  
+
+.carousel-caption h1 {  
+    font-size: 32px;  
+    margin-bottom: 5px;  
+}  
+
+.carousel-caption p {  
+    font-size: 28px;  
+    margin-top: 120px;   
+    margin-bottom: 15px; /* Space for button to avoid interference */  
+}  
+
+.carousel-caption .button-container {  
+    display: flex; /* Use flexbox for button and indicators */  
+    flex-direction: column; /* Stack items vertically */  
+    align-items: center; /* Center items horizontally */  
+}  
+
+.carousel-caption .btn {  
+    padding: 10px 20px; /* Control padding */  
+    margin-top: 10px;   
+    margin-bottom: 10px; /* Space under button */  
+    box-sizing: border-box; /* Include padding in width */  
+    display: inline-block; /* Ensure button is treated as inline block */  
+    font-size: 16px;   
+}  
+
+.carousel-indicators {  
+    margin-top: 10px; /* Space above the indicators */  
+}  
+
+@media (max-width: 1025px) {  
+    .carousel-caption {  
+        height: 60%;   
+    }  
+    .carousel-caption h1 {  
+        margin-top: 50px;  
+        font-size: 40px;  
+    }  
+
+    .carousel-caption p {  
+        margin-top: 160px;  
+        font-size: 34px;  
+    }  
+
+    .carousel-caption .btn {  
+        font-size: 26px; /* Adjust button size */  
+        padding: 10px 15px; /* Adjust padding */  
+    }   
+}   
+
+/* Responsive Design */  
+@media (max-width: 768px) {
+    
+    .carousel-caption {  
+         max-height: 550px;  
+         height: 30%;   
+     }  
+
+    .carousel-caption {  
+        height: 80%;   
+    }  
+    .carousel-caption h1 {  
+        font-size: 34px;  
+    }  
+
+    .carousel-caption p {  
+        margin-top: 40px;  
+        font-size: 24px;  
+    }  
+
+    .carousel-caption .btn {  
+        font-size: 14px; /* Adjust button size */  
+        padding: 10px 15px; /* Adjust padding */  
+    }  
+}  
+
+@media (max-width: 480px) {  
+
+    .carousel-caption {  
+         max-height: 550px;  
+         height: 30%;   
+     }  
+    
+    .carousel-caption {  
+        height: 80%;   
+    }   
+    .carousel-caption h1 {  
+        margin-top: 30px;  
+        font-size: 24px;  
+    }  
+
+    .carousel-caption p {  
+        margin-top: 50px;  
+        font-size: 20px;    
+    }  
+
+    .carousel-caption .btn {  
+        font-size: 12px; /* Adjust button size */  
+        padding: 8px 12px; /* Adjust padding */  
+    }  
+}  
+
+@media (max-width: 355px) {  
+    .carousel-caption {  
+        height: 80%;   
+    }   
+    .carousel-caption h1 {  
+        margin-top: 30px;  
+        font-size: 22px;  
+    }  
+
+    .carousel-caption p {  
+        margin-top: 80px;  
+        font-size: 18px;    
+    }  
+
+    .carousel-caption .btn {  
+        font-size: 12px; /* Adjust button size */  
+        padding: 8px 12px; /* Adjust padding */  
+    }  
+}  

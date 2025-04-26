@@ -1,0 +1,445 @@
+// Pedometer functionality  
+let stepCount = 0;  
+let isCounting = false;  
+let lastTimestamp = 0;  
+let activityHistory = [];  
+let chart;  
+let strideLength = 0.762; // Average stride length in meters  
+let weight = 70; // Average weight in kg  
+
+// DOM elements  
+const stepsElement = document.getElementById('steps');  
+const distanceElement = document.getElementById('distance');  
+const caloriesElement = document.getElementById('calories');  
+const startBtn = document.getElementById('startBtn');  
+const stopBtn = document.getElementById('stopBtn');  
+const resetBtn = document.getElementById('resetBtn');  
+const historyBody = document.getElementById('historyBody');  
+const installBtn = document.getElementById('installBtn');  
+const dataStatus = document.createElement('div');  
+dataStatus.id = 'dataStatus';  
+dataStatus.style.position = 'fixed';  
+dataStatus.style.bottom = '50px';  
+dataStatus.style.left = '50%';  
+dataStatus.style.transform = 'translateX(-50%)';  
+dataStatus.style.backgroundColor = '#4CAF50';  
+dataStatus.style.color = 'white';  
+dataStatus.style.padding = '10px 20px';  
+dataStatus.style.borderRadius = '5px';  
+dataStatus.style.display = 'none';  
+document.body.appendChild(dataStatus);  
+
+// Initialize Chart  
+function initializeChart() {  
+    const ctx = document.getElementById('activityChart').getContext('2d');  
+    chart = new Chart(ctx, {  
+        type: 'line',  
+        data: {  
+            labels: [],  
+            datasets: [{  
+                label: 'Steps',  
+                data: [],  
+                borderColor: '#4CAF50',  
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',  
+                borderWidth: 2,  
+                tension: 0.1,  
+                fill: true  
+            }]  
+        },  
+        options: {  
+            responsive: true,  
+            maintainAspectRatio: false,  
+            scales: {  
+                y: {  
+                    beginAtZero: true  
+                }  
+            }  
+        }  
+    });  
+}  
+
+// Update chart with new data  
+function updateChart() {  
+    const now = new Date();  
+    const timeLabel = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;  
+    
+    console.log('Updating chart with new data:', stepCount);  
+    chart.data.labels.push(timeLabel);  
+    chart.data.datasets[0].data.push(stepCount);  
+    
+    if (chart.data.labels.length > 12) {  
+        chart.data.labels.shift();  
+        chart.data.datasets[0].data.shift();  
+    }  
+    chart.update();  
+    console.log('Chart updated successfully');  
+}  
+
+// Calculate distance in kilometers  
+function calculateDistance(steps) {  
+    return (steps * strideLength) / 1000;  
+}  
+
+// Calculate calories burned  
+function calculateCalories(steps) {  
+    return Math.round(steps * 0.04);  
+}  
+
+// Update the display  
+function updateDisplay() {  
+    console.log('Updating display...');  
+    stepsElement.textContent = stepCount;  
+    const distance = calculateDistance(stepCount);  
+    distanceElement.textContent = distance.toFixed(2);  
+    caloriesElement.textContent = calculateCalories(stepCount);  
+    console.log('Display updated successfully');  
+}  
+
+// Add entry to history  
+function addHistoryEntry() {  
+    const now = new Date();  
+    const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});  
+    const distance = calculateDistance(stepCount);  
+    
+    activityHistory.push({  
+        time: timeString,  
+        steps: stepCount,  
+        distance: distance.toFixed(2)  
+    });  
+    
+    console.log('Added new history entry:', {  
+        time: timeString,  
+        steps: stepCount,  
+        distance: distance.toFixed(2)  
+    });  
+    
+    historyBody.innerHTML = '';  
+    activityHistory.slice().reverse().forEach(entry => {  
+        const row = document.createElement('tr');  
+        row.innerHTML = `  
+            <td>${entry.time}</td>  
+            <td>${entry.steps}</td>  
+            <td>${entry.distance}</td>  
+        `;  
+        historyBody.appendChild(row);  
+    });  
+}  
+
+// Handle device motion  
+function handleMotion(event) {  
+    if (!isCounting) {  
+        console.log('App is not counting steps');  
+        return;  
+    }  
+    
+    const acceleration = event.accelerationIncludingGravity;  
+    const timestamp = event.timeStamp;  
+    
+    if (!acceleration) {  
+        console.warn('Acceleration data not available');  
+        return;  
+    }  
+    
+    console.log('Received motion data:', {  
+        x: acceleration.x,  
+        y: acceleration.y,  
+        z: acceleration.z,  
+        timestamp: timestamp  
+    });  
+    
+    const magnitude = Math.sqrt(  
+        Math.pow(acceleration.x, 2) +  
+        Math.pow(acceleration.y, 2) +  
+        Math.pow(acceleration.z, 2)  
+    );  
+    
+    console.log('Calculated magnitude:', magnitude);  
+    
+    if (timestamp - lastTimestamp > 300) {  
+        console.log('Potential step detected');  
+        if (magnitude > 10) {  
+            stepCount++;  
+            updateDisplay();  
+            updateChart();  
+            lastTimestamp = timestamp;  
+            
+            console.log('Step detected! Total steps:', stepCount);  
+            
+            if (stepCount % 10 === 0) {  
+                addHistoryEntry();  
+                console.log('History entry added');  
+            }  
+            
+            // Show data receiving status  
+            dataStatus.textContent = 'Receiving Data: ' + stepCount + ' Steps';  
+            dataStatus.style.display = 'block';  
+            setTimeout(() => {  
+                dataStatus.style.display = 'none';  
+            }, 2000);  
+        }  
+    } else {  
+        console.log('Ignoring motion - too soon since last step');  
+    }  
+}  
+
+// Start counting steps  
+async function startCounting() {  
+    if (isCounting) {  
+        console.log('Already counting steps');  
+        return;  
+    }  
+    
+    console.log('Starting step counting...');  
+    isCounting = true;  
+    
+    if ('Accelerometer' in window || window.DeviceMotionEvent) {  
+        console.log('Motion sensor is supported');  
+        try {  
+            await requestPermission();  
+            console.log('Permission granted');  
+            startBtn.disabled = true;  
+            stopBtn.disabled = false;  
+            
+            if ('Accelerometer' in window) {  
+                startAccelerometer();  
+            } else {  
+                startPedometerUsingMotion();  
+            }  
+            
+            if (stepCount === 0) {  
+                addHistoryEntry();  
+                console.log('Initial history entry added');  
+            }  
+            
+            dataStatus.textContent = 'Started Counting Steps!';  
+            dataStatus.style.backgroundColor = '#4CAF50';  
+            dataStatus.style.display = 'block';  
+            setTimeout(() => {  
+                dataStatus.style.display = 'none';  
+            }, 2000);  
+        } catch (error) {  
+            console.error('Error initializing sensor:', error);  
+            alert('Error accessing motion sensors. Please check permissions.');  
+            dataStatus.textContent = 'Error: Could not access sensors';  
+            dataStatus.style.backgroundColor = '#FF0000';  
+            dataStatus.style.display = 'block';  
+            setTimeout(() => {  
+                dataStatus.style.display = 'none';  
+            }, 2000);  
+        }  
+    } else {  
+        console.error('Motion sensor is not supported');  
+        alert('Your browser does not support motion sensors.');  
+        dataStatus.textContent = 'Error: Motion sensor not supported';  
+        dataStatus.style.backgroundColor = '#FF0000';  
+        dataStatus.style.display = 'block';  
+        setTimeout(() => {  
+            dataStatus.style.display = 'none';  
+        }, 2000);  
+        startMockSensor();  
+    }  
+}  
+
+// Start Accelerometer sensor  
+function startAccelerometer() {  
+    const options = { frequency: 60 };  
+    
+    console.log('Starting Accelerometer...');  
+    try {  
+        const accelerometer = new Accelerometer(options);  
+        accelerometer.addEventListener('reading', (event) => {  
+            const { x, y, z } = event.target.acceleration;  
+            const magnitude = Math.sqrt(x**2 + y**2 + z**2);  
+            
+            console.log('Accelerometer data:', {  
+                x: x,  
+                y: y,  
+                z: z,  
+                magnitude: magnitude  
+            });  
+            
+            if (magnitude > 12 && Date.now() - lastTimestamp > 300) {  
+                console.log('Step detected by Accelerometer!');  
+                stepCount++;  
+                updateDisplay();  
+                updateChart();  
+                lastTimestamp = Date.now();  
+                
+                if (stepCount % 10 === 0) {  
+                    addHistoryEntry();  
+                }  
+                
+                dataStatus.textContent = 'Receiving Data: ' + stepCount + ' Steps';  
+                dataStatus.style.backgroundColor = '#4CAF50';  
+                dataStatus.style.display = 'block';  
+                setTimeout(() => {  
+                    dataStatus.style.display = 'none';  
+                }, 2000);  
+            }  
+        });  
+        
+        accelerometer.start();  
+        console.log('Accelerometer started successfully');  
+    } catch (error) {  
+        console.error('Error starting Accelerometer:', error);  
+        startPedometerUsingMotion();  
+    }  
+}  
+
+// Start pedometer using motion sensors  
+function startPedometerUsingMotion() {  
+    console.log('Starting DeviceMotion event listener...');  
+    window.addEventListener('devicemotion', handleMotion);  
+}  
+
+// Start mock sensor (for testing)  
+function startMockSensor() {  
+    console.log('Starting mock sensor...');  
+    isCounting = true;  
+    startBtn.disabled = true;  
+    stopBtn.disabled = false;  
+    
+    let mockStepCount = 0;  
+    const interval = setInterval(() => {  
+        const mockData = {  
+            timeStamp: Date.now(),  
+            accelerationIncludingGravity: {  
+                x: Math.random() * 2 - 1,  
+                y: Math.random() * 2 - 1,  
+                z: Math.random() * 2 - 1  
+            }  
+        };  
+        console.log('Mock data:', mockData);  
+        handleMotion(mockData);  
+        
+        mockStepCount++;  
+        dataStatus.textContent = 'Mock Data: ' + mockStepCount + ' Steps';  
+        dataStatus.style.backgroundColor = '#FFA500';  
+        dataStatus.style.display = 'block';  
+        setTimeout(() => {  
+            dataStatus.style.display = 'none';  
+        }, 1000);  
+    }, 1000);  
+    
+    stopBtn.addEventListener('click', () => {  
+        clearInterval(interval);  
+    });  
+}  
+
+// Stop counting steps  
+function stopCounting() {  
+    console.log('Stopping step counting...');  
+    isCounting = false;  
+    startBtn.disabled = false;  
+    stopBtn.disabled = true;  
+    
+    if ('Accelerometer' in window) {  
+        try {  
+            const accelerometer = new Accelerometer();  
+            accelerometer.stop();  
+            console.log('Accelerometer stopped');  
+        } catch (error) {  
+            console.error('Error stopping Accelerometer:', error);  
+        }  
+    } else {  
+        window.removeEventListener('devicemotion', handleMotion);  
+        console.log('DeviceMotion event listener removed');  
+    }  
+    
+    addHistoryEntry();  
+}  
+
+// Reset step count  
+function resetCounter() {  
+    console.log('Resetting step count...');  
+    stepCount = 0;  
+    updateDisplay();  
+    activityHistory = [];  
+    historyBody.innerHTML = '';  
+    
+    if (chart) {  
+        chart.data.labels = [];  
+        chart.data.datasets[0].data = [];  
+        chart.update();  
+    }  
+    
+    dataStatus.textContent = 'Reset Complete!';  
+    dataStatus.style.backgroundColor = '#4CAF50';  
+    dataStatus.style.display = 'block';  
+    setTimeout(() => {  
+        dataStatus.style.display = 'none';  
+    }, 1000);  
+}  
+
+// Request permissions  
+async function requestPermission() {  
+    console.log('Requesting motion permission...');  
+    if (typeof DeviceMotionEvent !== 'undefined' &&  
+        typeof DeviceMotionEvent.requestPermission === 'function') {  
+        const permission = await DeviceMotionEvent.requestPermission();  
+        if (permission !== 'granted') {  
+            throw new Error('Permission denied');  
+        }  
+    }  
+}  
+
+// Event listeners  
+startBtn.addEventListener('click', startCounting);  
+stopBtn.addEventListener('click', stopCounting);  
+resetBtn.addEventListener('click', resetCounter);  
+
+// Load saved data  
+function loadSavedData() {  
+    console.log('Loading saved data...');  
+    const savedData = localStorage.getItem('pedometerData');  
+    if (savedData) {  
+        const data = JSON.parse(savedData);  
+        stepCount = data.stepCount || 0;  
+        activityHistory = data.activityHistory || [];  
+        
+        console.log('Loaded:', data);  
+        updateDisplay();  
+        
+        historyBody.innerHTML = '';  
+        activityHistory.slice().reverse().forEach(entry => {  
+            const row = document.createElement('tr');  
+            row.innerHTML = `  
+                <td>${entry.time}</td>  
+                <td>${entry.steps}</td>  
+                <td>${entry.distance}</td>  
+            `;  
+            historyBody.appendChild(row);  
+        });  
+    }  
+}  
+
+// Save data  
+function saveData() {  
+    console.log('Saving data...');  
+    const data = {  
+        stepCount,  
+        activityHistory  
+    };  
+    localStorage.setItem('pedometerData', JSON.stringify(data));  
+    console.log('Data saved:', data);  
+}  
+
+// Initialize app  
+function init() {  
+    console.log('Initializing app...');  
+    initializeChart();  
+    loadSavedData();  
+    
+    setInterval(saveData, 10000);  
+    window.addEventListener('beforeunload', saveData);  
+    
+    if (window.matchMedia('(display-mode: standalone)').matches) {  
+        console.log('Running as standalone PWA');  
+        installBtn.style.display = 'none';  
+    } else {  
+        console.log('Running as web app');  
+    }  
+}  
+
+// Start app  
+init();  

@@ -1,0 +1,88 @@
+
+
+.muscle-groups {
+  position: relative;
+  background: #eee;
+  width: 320px;
+  padding: .5rem 1rem;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px 0 rgba(black, .5);
+  overflow: hidden;
+  border-top: .75rem solid #00BCD4;
+  h1 {
+    margin: -.5rem -1rem 1rem;
+    padding: 0 1rem .75rem;
+    background: #00BCD4;
+    color: #eee;
+    text-align: center;
+    font-size: 1.25rem;
+  }
+  h2 {
+    margin: 0 0 .5rem;
+    font-size: .8rem;
+    letter-spacing: -.03em;
+    text-transform: uppercase;
+  }
+  label + h2 { margin-top: 1rem; }
+  label {
+    width: 50px;
+    display: block;
+    margin-bottom: .5rem;
+    cursor: pointer;
+    font-size: .7rem;
+    opacity: .5;
+    position: relative;
+    z-index: 200;
+    border-left: 5px solid transparent;
+    padding-left: 6px;
+    margin-left: -11px;
+    &:hover, &.hover {
+      opacity: 1;
+      border-color: rgba(#333, .75);
+    }
+  }
+  input:checked + label {
+    opacity: 1;
+    font-weight: bold;
+    color: #00BCD4;
+  }
+  svg {
+    position: absolute;
+    bottom: 6rem;
+    height: 310px;
+    z-index: 100;
+  }
+  svg g[id] path {
+    opacity: .2;
+    transition: opacity .25s ease-in-out;
+  }
+  svg g g[id]:hover path {
+    cursor: pointer;
+    opacity: .5;
+    fill: #00BCD4 !important;
+  }
+  .muscles-helper {
+    display: none;
+  }
+  $groups: obliques, abs, quads, biceps, adductors, pectorals, deltoids, hamstrings, quads, forearms, calves, triceps, glutes, lats, trapezius;
+  @each $muscle in $groups {
+    $upper: to-upper-case(str-slice($muscle, 1, 1)) + str-slice($muscle, 2);
+    label[for="#{$muscle}"]:hover ~ svg ##{$upper} path {
+      opacity: .75;
+    }
+    .#{$muscle}:checked ~ svg ##{$upper} path {
+      opacity: .8;
+      fill: #00BCD4 !important;
+    }
+  }
+}
+.cbox {
+  display: flex; /* Change to flexbox for responsiveness */  
+  flex-direction: column; /* Default column layout */  
+  border-radius: 20px;  
+  background: Transparent;  
+  height: 80%;  
+  width: 85%; /* Responsive width */  
+  align-items: center; /* Center items horizontally */  
+  background: transparent; 
+}

@@ -1,0 +1,350 @@
+ /* ---- reset ---- */  
+ body {   
+    margin: 0;  
+    padding: 0;  
+    overflow: hidden;  
+}  
+
+canvas {  
+    display: block;  
+    vertical-align: bottom;  
+}  
+
+/* ---- particles.js container ---- */  
+#particles-js {  
+    position: absolute;  
+    width: 100%;  
+    height: 100%;  
+    background-color: #000;  
+    /* Fallback color */  
+    background: linear-gradient(45deg,rgb(14, 107, 189),rgb(118, 204, 213));  
+    z-index: -1;  
+    /* Ensure it is behind other elements */  
+}  
+
+:root {  
+    --card-height: 170px;  
+    /* Adjusted size */  
+    --card-width: 170px;  
+    /* Adjusted size */  
+}  
+
+@property --rotate {  
+    syntax: "<angle>";  
+    initial-value: 132deg;  
+    inherits: false;  
+}  
+
+body {  
+    min-height: 100vh;  
+    display: flex;  
+    flex-direction: column;  
+    justify-content: center;  
+    align-items: center;  
+    padding: 20px;  
+    /* Padding around elements */  
+    box-sizing: border-box;  
+}  
+
+.sidebar {  
+    position: fixed;  
+    top: 0;  
+    right: 0;  
+    width: 200px;  
+    height: auto;  
+    background: linear-gradient(135deg, #4a4e69, #22223b);  
+    color: #ffffff;  
+    display: flex;  
+    flex-direction: column;  
+    padding: 10px;  
+    border-radius: 10px;  
+    box-shadow: -2px 0 15px rgba(0, 0, 0, 0.3);  
+    transform: translateX(100%);  
+    /* Sidebar starts off-screen */  
+    transition: transform 0.3s ease;  
+    z-index: 1000;  
+    /* Ensure it stays above other elements */  
+}  
+
+.sidebar.active {  
+    transform: translateX(0);  
+}  
+
+.sidebar h2 {  
+    font-size: 18px;  
+    margin-bottom: 20px;  
+    text-align: center;  
+}  
+
+.sidebar .nav {  
+    list-style: none;  
+    padding: 0;  
+    margin: 0;  
+}  
+
+.sidebar .nav-item {  
+    margin-bottom: 15px;  
+}  
+
+.sidebar .nav-link {  
+    color: #ffffff;  
+    text-decoration: none;  
+    display: flex;  
+    align-items: center;  
+    padding: 10px;  
+    border-radius: 5px;  
+    transition: background-color 0.3s ease;  
+}  
+
+.sidebar .nav-link:hover {  
+    background-color: #495057;  
+}  
+
+.sidebar .nav-link img {  
+    margin-right: 10px;  
+}  
+
+.toggle-sidebar {  
+    position: fixed;  
+    top: 20px;  
+    right: 20px;  
+    z-index: 1001;  
+    /* Higher than sidebar to ensure clickable */  
+    background-color: #007bff;  
+    color: #ffffff;  
+    border: none;  
+    padding: 10px 15px;  
+    cursor: pointer;  
+    border-radius: 5px;  
+}  
+
+.boxes {  
+    display: flex;  
+    flex-wrap: wrap;  
+    justify-content: center;  
+    align-items: center;  
+    gap: 20px;  
+    /* Space between boxes */  
+    opacity: 0;  
+    /* Start off invisible for fade-in effect */  
+    animation: fadeIn 3s forwards;  
+    /* Add fade-in animation */  
+}  
+
+@keyframes fadeIn {  
+    to {  
+        opacity: 1;  
+        /* Fade to fully visible */  
+    }  
+}  
+
+.box {  
+    width: var(--card-width);  
+    height: var(--card-height);  
+    padding: 3px;  
+    position: relative;  
+    border-radius: 80px;  
+    justify-content: center;  
+    align-items: center;  
+    text-align: center;  
+    display: flex;  
+    flex-direction: column;  
+    color: white;  
+    cursor: pointer;  
+}  
+
+.box:hover {
+  color: rgb(88 199 250 / 100%);
+   transition: color 1s;
+}
+
+.box::before {  
+    content: "";  
+    width: 104%;  
+    height: 102%;  
+    border-radius: 80px;  
+    background-image: linear-gradient(var(--rotate),  
+            #5ddcff,  
+            #3c67e3 43%,  
+            #4e00c2);  
+    position: absolute;  
+    z-index: -1;  
+    top: -1%;  
+    left: -2%;  
+    animation: spin 11.5s linear infinite;  
+}  
+
+.box::after {  
+    position: absolute;  
+    content: "";  
+    top: calc(var(--card-height) / 6);  
+    left: 0;  
+    right: 0;  
+    z-index: -1;  
+    height: 100%;  
+    width: 100%;  
+    margin: 0 auto;  
+    transform: scale(0.8);  
+    filter: blur(calc(var(--card-height) / 6));  
+    background-image: linear-gradient(var(--rotate),  
+            #5ddcff,  
+            #3c67e3 43%,  
+            #4e00c2);  
+    opacity: 1;  
+    transition: opacity .5s;  
+    animation: spin 11.5s linear infinite;  
+}  
+
+@keyframes spin {  
+    0% {  
+        --rotate: 0deg;  
+    }  
+
+    100% {  
+        --rotate: 360deg;  
+    }  
+}  
+
+.box img {  
+    width: 60px;  
+    /* Adjusted icon size */  
+    height: 60px;  
+    /* Adjusted icon size */  
+    margin-bottom: 10px;  
+    /* Space between icon and text */  
+    z-index: 1;  
+    /* Ensure the icon is above the background */  
+}  
+
+/* Always show text on touch devices */  
+@media (hover: none) and (pointer: coarse) {  
+    .box span {  
+        display: block;  
+        /* Show text on touch devices */  
+    }  
+}  
+
+/* Bottom navigation styles */  
+.bottom-menu {  
+    position: fixed;  
+    bottom: 0;  
+    left: 0;  
+    width: 100%;  
+    background: rgba(255, 255, 255, 0.8);  
+    backdrop-filter: blur(10px);  
+    display: flex;  
+    justify-content: space-around;  
+    align-items: center;  
+    padding: 10px 0;  
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);  
+    z-index: 999;  
+    /* Ensure it is above the page content but below the sidebar toggle */  
+}  
+
+.bottom-menu a {  
+    text-decoration: none;  
+    color: #495057;  
+    display: flex;  
+    flex-direction: column;  
+    align-items: center;  
+    font-size: 12px;  
+    transition: color 0.3s ease;  
+}  
+
+.bottom-menu a:hover {  
+    color: #007bff;  
+}  
+
+.bottom-menu a span {  
+    display: none;  
+}  
+
+.bottom-menu a:hover span {  
+    display: block;  
+    font-size: 10px;  
+    margin-top: 5px;  
+}  
+
+@media (max-width: 770px) {  
+    .sidebar h2 {  
+        display: none;  
+        /* Hide the heading when width is smaller than 770px */  
+    }  
+}  
+
+@media (hover: hover) and (pointer: fine) {  
+    .bottom-menu a:hover span {  
+        display: block;  
+        font-size: 10px;  
+        margin-top: 5px;  
+    }  
+}  
+
+/* Show labels on touch for mobile/PWA */  
+@media (hover: none) and (pointer: coarse) {  
+    .bottom-menu a:active span,  
+    .bottom-menu a.touched span {  
+        display: block;  
+        font-size: 10px;  
+        margin-top: 5px;  
+    }  
+}  
+
+/* Styles for the activity container */  
+#activityContainer {  
+position: absolute;  
+top: 50%;  
+left: 50%;  
+transform: translate(-50%, -50%);  
+background: rgba(255, 255, 255, 0.8);  
+padding: 30px;  
+border-radius: 15px;  
+box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);  
+text-align: center;  
+z-index: 10;  
+width: 400px;  
+height: 350px; /* Set a fixed height */  
+overflow: hidden; /* Hide scrollbars */  
+display: flex;  
+flex-direction: column;  
+}  
+
+#activityContainer h2 {  
+margin-bottom: 15px;  
+font-size: 2em;  
+}  
+
+/* Keep the Calories Burned label and value on the same line */  
+#caloriesBurned {  
+white-space: nowrap;  
+margin-top: 50px;  
+}  
+
+.activity-buttons {  
+display: flex;  
+justify-content: center;  
+margin-top: 20px; /* Reduced margin */  
+}  
+
+.activity-buttons button {  
+padding: 15px 30px; /* Even larger button padding */  
+margin: 0 10px; /* Increased margin */  
+cursor: pointer;  
+font-size: 1.3em; /* Larger font size for buttons */  
+border-radius: 10px; /* Larger border radius */  
+min-width: 120px; /* Ensure buttons don't become too narrow */  
+}  
+
+.activity-buttons button {  
+padding: 15px 30px; /* Even larger button padding */  
+margin: 0 10px; /* Increased margin */  
+cursor: pointer;  
+font-size: 1.3em; /* Larger font size for buttons */  
+border-radius: 10px; /* Larger border radius */  
+min-width: 120px; /* Ensure buttons don't become too narrow */  
+}  
+
+#activityContainer {  
+text-align: center;  
+margin-top: 20px;  
+} 

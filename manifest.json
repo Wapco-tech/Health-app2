@@ -1,0 +1,30 @@
+{
+    "name": "Health App",
+    "short_name": "HealthApp",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#007bff",
+    "description": "A health management application with pedometer functionality.",
+    "icons": [
+        {
+            "src": "path/to/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "path/to/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "categories": ["health", "fitness"],
+    "screenshots": [
+        {
+            "src": "path/to/pedometer-screenshot.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "form_factor": "narrow"
+        }
+    ]
+}
