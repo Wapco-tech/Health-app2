@@ -154,7 +154,7 @@
         let lastTimestamp = 0;  
         let activityHistory = [];  
         let chart;  
-        let strideLength = 0.762;  
+        let strideLength = 0.762; // meters  
         let weight = 70;  
         
         // DOM elements  
@@ -471,8 +471,8 @@
         function updateDisplay() {  
             try {  
                 stepsElement.textContent = stepCount;  
-                const distance = stepCount * strideLength; // Changed from kilometers to meters  
-                distanceElement.textContent = distance.toFixed(2);  
+                const distance = stepCount * strideLength; // Now in meters  
+                distanceElement.textContent = `${distance.toFixed(2)} meters`;  
                 caloriesElement.textContent = Math.round(stepCount * 0.04);  
                 debugLog(`Display updated - Steps: ${stepCount}, Distance: ${distance.toFixed(2)} meters`);  
             } catch (error) {  
@@ -485,7 +485,7 @@
             try {  
                 const now = new Date();  
                 const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});  
-                const distance = stepCount * strideLength; // Changed from kilometers to meters  
+                const distance = stepCount * strideLength; // Calculate distance in meters  
                 
                 activityHistory.push({  
                     time: timeString,  
@@ -502,7 +502,7 @@
                     row.innerHTML = `  
                         <td>${entry.time}</td>  
                         <td>${entry.steps}</td>  
-                        <td>${entry.distance}</td>  
+                        <td>${entry.distance} meters</td>  
                     `;  
                     historyBody.appendChild(row);  
                 });  
@@ -531,7 +531,7 @@
                         row.innerHTML = `  
                             <td>${entry.time}</td>  
                             <td>${entry.steps}</td>  
-                            <td>${entry.distance}</td>  
+                            <td>${entry.distance} meters</td>  
                         `;  
                         historyBody.appendChild(row);  
                     });  
