@@ -475,7 +475,7 @@
                 const distance = stepCount * strideLength; // Now in meters  
                 distanceElement.textContent = `${distance.toFixed(2)}`;  
                 caloriesElement.textContent = Math.round(stepCount * 0.04);  
-                debugLog(`Display updated - Steps: ${stepCount}, Distance: ${distance.toFixed(2)} meters`);  
+                debugLog(`Display updated - Steps: ${stepCount}, Distance: ${distance.toFixed(2)}`);  
             } catch (error) {  
                 debugLog(`Error updating display: ${error.message}`);  
             }  
@@ -494,7 +494,7 @@
                     distance: distance.toFixed(2)  
                 });  
                 
-                debugLog(`Added history entry - Time: ${timeString}, Steps: ${stepCount}, Distance: ${distance.toFixed(2)} meters`);  
+                debugLog(`Added history entry - Time: ${timeString}, Steps: ${stepCount}, Distance: ${distance.toFixed(2)}`);  
                 
                 // Update history table  
                 historyBody.innerHTML = '';  
