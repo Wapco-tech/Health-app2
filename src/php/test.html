@@ -473,7 +473,7 @@
             try {  
                 stepsElement.textContent = stepCount;  
                 const distance = stepCount * strideLength; // Now in meters  
-                distanceElement.textContent = `${distance.toFixed(2)} meters`;  
+                distanceElement.textContent = `${distance.toFixed(2)}`;  
                 caloriesElement.textContent = Math.round(stepCount * 0.04);  
                 debugLog(`Display updated - Steps: ${stepCount}, Distance: ${distance.toFixed(2)} meters`);  
             } catch (error) {  
